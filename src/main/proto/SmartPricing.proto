@@ -1,0 +1,33 @@
+syntax = "proto3";
+option java_multiple_files = true;
+option java_package = "generated.grpc.SmartPricing";
+option java_outer_classname = "SmartPricingImpl";
+package retail;
+
+service SmartPricing {
+    // Retrieve the current price of a product
+    rpc GetPrice (ProductRequest) returns (ProductResponse);
+
+    // Update the price of a product
+    rpc UpdatePrice(PriceUpdateRequest) returns (PriceUpdateResponse);
+}
+
+message ProductRequest {
+    string product_id = 1;
+}
+
+message ProductResponse {
+    string product_id = 1;
+    double price = 2;
+}
+
+message PriceUpdateRequest {
+    string product_id = 1;
+    double new_price = 2;
+}
+
+message PriceUpdateResponse {
+    bool success = 1;
+}                                          
+
+

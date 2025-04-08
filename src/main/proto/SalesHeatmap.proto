@@ -1,0 +1,25 @@
+syntax = "proto3";
+option java_multiple_files = true;
+option java_package = "generated.grpc.SalesMonitor";
+option java_outer_classname = "SalesHeatmapImpl";
+
+package retail;
+
+service SalesHeatmap {
+    // Stream live sales updates for a section (Server Streaming)
+    rpc StreamSalesUpdates(SalesRequest) returns (stream SalesUpdate);
+}
+
+message SalesRequest {
+    string section_id = 1;
+}
+
+message SalesUpdate {
+    string section_id = 1;
+    int32 new_sales = 2;
+    string timestamp = 3;
+}
+
+
+
+

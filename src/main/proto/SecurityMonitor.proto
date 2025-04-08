@@ -1,0 +1,33 @@
+syntax = "proto3";
+option java_multiple_files = true;
+option java_package = "generated.grpc.SecurityMonitor";
+option java_outer_classname = "SecurityMonitorImpl";
+package retail;
+
+service StoreSecurity {
+    // Server streams security alerts in real-time (Server Streaming)
+    rpc StreamSecurityAlerts(Empty) returns (stream SecurityAlert);
+
+    // Two-way communication between security team and system (Bidirectional Streaming)
+    rpc HandleSecurityIncident(stream SecurityIncident) returns (stream SecurityResponse);
+}
+
+message Empty {}
+
+message SecurityAlert {
+    string store_id = 1;
+    string alert_message = 2;
+    string timestamp = 3;
+}
+
+message SecurityIncident {
+    string incident_id = 1;
+    string action_taken = 2;
+}
+
+message SecurityResponse {
+    string incident_id = 1;
+    string response_status = 2;
+}
+
+
