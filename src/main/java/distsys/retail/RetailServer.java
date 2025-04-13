@@ -1,57 +1,97 @@
-package server;
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package distsys.retail;
 
-import generated.grpc.InventoryRefill.InventoryRestockServiceImpl;
-import generated.grpc.SalesHeatmap.SalesHeatmapServiceImpl;
-import generated.grpc.SecurityMonitor.SecurityMonitorServiceImpl;
-import generated.grpc.SmartPricing.SmartPricingServiceImpl;
+import generated.grpc.InventoryRefill.InventoryRestockGrpc;
+import generated.grpc.InventoryRefill.RestockRequest;
+import generated.grpc.InventoryRefill.RestockSummary;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
-
+import io.grpc.stub.StreamObserver;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
- * Main gRPC server for the Retail Automation System.
- * It registers all service implementations in one place.
+ *
+ * @author yourname
  */
-public class RetailServer {
-
-    private Server server;
-
-    private void start() throws IOException {
-        int port = 9090;
-
-        server = ServerBuilder.forPort(port)
-                .addService(new InventoryRestockServiceImpl())
-                .addService(new SalesHeatmapServiceImpl())
-                .addService(new SecurityMonitorServiceImpl())
-                .addService(new SmartPricingServiceImpl())
-                .build()
-                .start();
-
-        System.out.println("Retail gRPC server started on port: " + port);
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.err.println("Shutting down Retail gRPC server...");
-            RetailServer.this.stop();
-            System.err.println("Server shut down.");
-        }));
-    }
-
-    private void stop() {
-        if (server != null) {
-            server.shutdown();
-        }
-    }
-
-    private void blockUntilShutdown() throws InterruptedException {
-        if (server != null) {
+public class RetailServer{
+    private static final Logger logger = Logger.getLogger(RetailServer.class.getName());
+    
+    public static void main(String [] args){
+       InventoryRestockImpl inventoryRefill = new InventoryRestockImpl();
+       
+        int port = 50051;
+        
+        try{
+            Server server = ServerBuilder.forPort(port)
+                    .addService(inventoryRefill)
+                    .build()
+                    .start();
+            logger.info("Server started, listening on " + port);
+            System.out.println("Server started, listening on " + port);
             server.awaitTermination();
+            
+        }catch(IOException e){
+            //TODO Auto-generated catch block
+            e.printStackTrace();
+        }catch(InterruptedException e){
+            //TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
+    
+    /*
+    *
+    *This service is a client streaming service
+    */
+    public static class InventoryRestockImpl extends InventoryRestockGrpc.InventoryRestockImplBase {
+        @Override
+        public StreamObserver<RestockRequest> bulkRestock(StreamObserver<RestockSummary> responseObserver) {
+            return new StreamObserver<RestockRequest>() {
+                int processedProducts = 0;
+                int failedProducts = 0;
+                String productID;
+                int qtty;
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-        final RetailServer server = new RetailServer();
-        server.start();
-        server.blockUntilShutdown();
+                @Override
+                public void onNext(RestockRequest request) {
+                    try {
+                        productID = request.getProductId();
+                        qtty = request.getQuantity();
+
+                        if (qtty <= 0 || qtty > 100) {
+                            failedProducts++;
+                            System.out.println("Failed to restock: Invalid quantity for Product ID " + productID);
+                        } else {
+                            processedProducts++;
+                            System.out.println("Restocked: Product ID " + productID + ", Quantity " + qtty);
+                        }
+                    } catch (Exception e) {
+                        failedProducts++;
+                        System.out.println("Error processing restock request: " + e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onError(Throwable t) {
+                    logger.severe("Error: " + t.getMessage());
+                }
+
+                @Override
+                public void onCompleted() {
+                    //sending the summary when it is completed
+                    RestockSummary summary = RestockSummary.newBuilder()
+                            .setTotalProcessed(processedProducts)
+                            .setTotalFailed(failedProducts)
+                            .build();
+
+                    responseObserver.onNext(summary); 
+                    responseObserver.onCompleted();
+                }
+            };
+        }
     }
 }
