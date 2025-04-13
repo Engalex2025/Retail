@@ -58,7 +58,6 @@ generated\grpc\SecurityMonitor\SecurityAlert$Builder.class
 generated\grpc\SmartPricing\PriceUpdateResponse.class
 generated\grpc\SalesMonitor\SalesUpdate.class
 generated\grpc\SmartPricing\ProductRequest$Builder.class
-distsys\retail\InventoryRefillGUI$5.class
 generated\grpc\SalesHeatmap\SalesUpdateOrBuilder.class
 distsys\retail\RetailServer.class
 generated\grpc\InventoryRefill\RestockRequest.class

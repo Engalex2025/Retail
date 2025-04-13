@@ -51,28 +51,23 @@ public class RetailServer{
         @Override
         public StreamObserver<RestockRequest> bulkRestock(StreamObserver<RestockSummary> responseObserver) {
             return new StreamObserver<RestockRequest>() {
-                int processedProducts = 0;
-                int failedProducts = 0;
+                int totalProcessed = 0;
+                int totalFailed = 0;
                 String productID;
                 int qtty;
 
                 @Override
                 public void onNext(RestockRequest request) {
-                    try {
                         productID = request.getProductId();
                         qtty = request.getQuantity();
 
                         if (qtty <= 0 || qtty > 100) {
-                            failedProducts++;
+                            totalFailed++;
                             System.out.println("Failed to restock: Invalid quantity for Product ID " + productID);
                         } else {
-                            processedProducts++;
+                            totalProcessed++;
                             System.out.println("Restocked: Product ID " + productID + ", Quantity " + qtty);
                         }
-                    } catch (Exception e) {
-                        failedProducts++;
-                        System.out.println("Error processing restock request: " + e.getMessage());
-                    }
                 }
 
                 @Override
@@ -84,8 +79,8 @@ public class RetailServer{
                 public void onCompleted() {
                     //sending the summary when it is completed
                     RestockSummary summary = RestockSummary.newBuilder()
-                            .setTotalProcessed(processedProducts)
-                            .setTotalFailed(failedProducts)
+                            .setTotalProcessed(totalProcessed)
+                            .setTotalFailed(totalFailed)
                             .build();
 
                     responseObserver.onNext(summary); 

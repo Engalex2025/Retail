@@ -10,6 +10,7 @@ import generated.grpc.InventoryRefill.RestockSummary;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
+import java.util.Random;
 import java.util.logging.Logger;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
@@ -26,6 +27,8 @@ public class InventoryRefillGUI extends javax.swing.JFrame {
     private DefaultTableModel table;
     ManagedChannel channel;
     StreamObserver<RestockRequest> requestObserver;
+    Random random = new Random();
+       
 
     /**
      * Creates new form InventoryRefillGUI
@@ -53,37 +56,23 @@ public class InventoryRefillGUI extends javax.swing.JFrame {
     private void initComponents() {
 
         jTextField1 = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
-        productID = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        quantity = new javax.swing.JSpinner();
-        addBtn = new javax.swing.JButton();
+        jTextField2 = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         inventoryTable = new javax.swing.JTable();
         submitBtn = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         output = new javax.swing.JTextArea();
+        jLabel2 = new javax.swing.JLabel();
+        start = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        outputRestock = new javax.swing.JTextArea();
+        jLabel4 = new javax.swing.JLabel();
 
         jTextField1.setText("jTextField1");
 
+        jTextField2.setText("jTextField2");
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jLabel1.setText("Product ID:");
-
-        productID.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                productIDActionPerformed(evt);
-            }
-        });
-
-        jLabel2.setText("Quantity:");
-
-        addBtn.setText("Add");
-        addBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addBtnActionPerformed(evt);
-            }
-        });
 
         inventoryTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -98,7 +87,7 @@ public class InventoryRefillGUI extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(inventoryTable);
 
-        submitBtn.setText("Submit");
+        submitBtn.setText("Send Restock");
         submitBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 submitBtnActionPerformed(evt);
@@ -111,118 +100,104 @@ public class InventoryRefillGUI extends javax.swing.JFrame {
         output.setRows(5);
         jScrollPane2.setViewportView(output);
 
+        jLabel2.setText("Start inventory by clicking on the button bellow");
+
+        start.setText("Start");
+        start.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                startActionPerformed(evt);
+            }
+        });
+
+        outputRestock.setEditable(false);
+        outputRestock.setColumns(20);
+        outputRestock.setLineWrap(true);
+        outputRestock.setRows(5);
+        jScrollPane3.setViewportView(outputRestock);
+
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel4.setText("Products with low quantity in stock:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 68, Short.MAX_VALUE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(82, 82, 82))
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 394, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(addBtn)
-                                    .addComponent(quantity, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
-                                    .addComponent(productID)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(145, 145, 145)
-                                .addComponent(submitBtn)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGap(143, 143, 143)
+                .addComponent(start)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2)
+                .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane3)
+                .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(143, 143, 143)
+                .addComponent(submitBtn)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(productID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(quantity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(addBtn)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(submitBtn)
+                .addContainerGap()
+                .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
+                .addComponent(start)
+                .addGap(11, 11, 11)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(submitBtn)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void productIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_productIDActionPerformed
-        String id = productID.getText().trim();
-
-        //if id is null or id does not contain only numbers
-        if (id.isEmpty() || !id.matches("\\d+")) {
-            output.append("Enter a valid numeric Product ID.");
-            productID.setText("");
-        }
-
-    }//GEN-LAST:event_productIDActionPerformed
-
-    private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
-        String id = productID.getText().trim();
-        int qty = (int) quantity.getValue();
-        
-        //validating the format of the inputs
-        if(id.isEmpty() || !id.matches("\\d+")) {
-            output.append("Enter a valid numeric Product ID.\n");
-            productID.setText("");
-            productID.requestFocus();
-            return;
-        }
-        
-        if (qty <= 0 || qty > 100) {
-            output.append("Quantity must be more than 0 and less than 100.\n");
-            return;
-        }
-
-        //adding a new row(data) to the table containing the information about the product
-        //this information is the ID and the quantity 
-        table.addRow(new Object[]{id, qty});
-        //cleaning the inputs so that the user can use it for another input product
-        productID.setText("");
-        quantity.setValue(0);
-        productID.requestFocus();
-    }//GEN-LAST:event_addBtnActionPerformed
-
     private void submitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitBtnActionPerformed
         if (table.getRowCount() == 0) {
-            output.setText("No data to send. Please add at least one product.");
+            outputRestock.setText("All products have a good quantity in the stock.");
             return;
         }
 
-        output.setText("Sending requests.\n");
+        outputRestock.setText("Sending requests.\n");
 
         StreamObserver<RestockSummary> responseObserver = new StreamObserver<RestockSummary>() {
             @Override
             public void onNext(RestockSummary summary) {
-                output.append("Information about the restock inventory:\n");
-                output.append("Total processed: " + summary.getTotalProcessed() + "\n");
-                output.append("Total Failed: " + summary.getTotalFailed() + "\n");
+                outputRestock.append("Information about the restock submission:\n");
+                outputRestock.append("Total processed: " + summary.getTotalProcessed() + "\n");
+                outputRestock.append("Total Failed: " + summary.getTotalFailed() + "\n");
             }
 
             @Override
             public void onError(Throwable t) {
-                output.append("Error: " + t.getMessage() + "\n");
+                outputRestock.append("Error: " + t.getMessage() + "\n");
             }
 
             @Override
             public void onCompleted() {
-                output.append("Stream completed.\n");
+                outputRestock.append("Stream completed.\n");
             }
         };
 
@@ -240,18 +215,12 @@ public class InventoryRefillGUI extends javax.swing.JFrame {
                     .build();
 
             requestObserver.onNext(request);
-            output.append("Product sent: ID = " + id + ", Quantity = " + qty + "\n");
-            output.append("Request sent successfully!" + "\n");
-            output.append("------------------------------------\n");
+            output.append("Sending request for Product ID: " + id + ", Quantity: " + qty + "\n");
 
         }
 
         requestObserver.onCompleted();
-
-        // Clear the input fields
-        productID.setText("");
-        quantity.setValue(0);
-
+        
         // Clear the table
         table.setRowCount(0);
 
@@ -261,6 +230,35 @@ public class InventoryRefillGUI extends javax.swing.JFrame {
 
     }//GEN-LAST:event_submitBtnActionPerformed
 
+    private void startActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startActionPerformed
+        output.setText("");
+        output.append("Initializing inventory:\n");
+        
+        for (int i = 0; i < 100; i++) {
+            String id = randomProductID();  
+            int qty = randomQuantity();   
+
+            output.append("Product ID: " + id + ", quantity: " + qty + "\n");
+            
+            if(qty < 10) {
+            // Adding to the list to be restocked
+            outputRestock.append("Product ID: " + id + " added to the list.\n");
+
+            table.addRow(new Object[]{id, qty});
+            }
+        }
+    }//GEN-LAST:event_startActionPerformed
+    
+    //recursive method to generate a random ID for productID(){
+    private String randomProductID(){
+        int id = random.nextInt(1000); 
+        return String.format("R%03d", id);
+    }
+    
+    //recursive method to generate a random quantity for the product
+    private int randomQuantity(){
+        return random.nextInt(100) + 1;
+    }
     /**
      * @param args the command line arguments
      */
@@ -295,18 +293,18 @@ public class InventoryRefillGUI extends javax.swing.JFrame {
             }
         });
     }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton addBtn;
     private javax.swing.JTable inventoryTable;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextField2;
     private javax.swing.JTextArea output;
-    private javax.swing.JTextField productID;
-    private javax.swing.JSpinner quantity;
+    private javax.swing.JTextArea outputRestock;
+    private javax.swing.JButton start;
     private javax.swing.JButton submitBtn;
     // End of variables declaration//GEN-END:variables
 }
