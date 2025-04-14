@@ -6,6 +6,7 @@ generated\grpc\SecurityMonitor\SecurityAlertOrBuilder.class
 distsys\retail\InventoryRefillGUI$1.class
 generated\grpc\SalesHeatmap\SalesUpdate$Builder.class
 generated\grpc\SmartPricing\PriceUpdateResponse$1.class
+distsys\retail\RetailServer$SmartPricingImpl.class
 generated\grpc\SecurityMonitor\StoreSecurityGrpc$StoreSecurityBlockingStub.class
 generated\grpc\SalesMonitor\SalesHeatmapGrpc$3.class
 generated\grpc\SalesMonitor\SalesHeatmapGrpc$SalesHeatmapImplBase.class
@@ -32,6 +33,7 @@ generated\grpc\SalesHeatmap\SalesHeatmapGrpc$MethodHandlers.class
 generated\grpc\SecurityMonitor\StoreSecurityGrpc$2.class
 distsys\retail\RetailServer$InventoryRestockImpl.class
 generated\grpc\SmartPricing\SmartPricingGrpc$3.class
+distsys\retail\SmartPricingGUI$2.class
 generated\grpc\SecurityMonitor\SecurityAlert$1.class
 generated\grpc\SmartPricing\ProductRequestOrBuilder.class
 generated\grpc\SalesHeatmap\SalesHeatmapGrpc$1.class
@@ -48,6 +50,7 @@ generated\grpc\SalesMonitor\SalesHeatmapGrpc$SalesHeatmapMethodDescriptorSupplie
 generated\grpc\SecurityMonitor\StoreSecurityGrpc.class
 generated\grpc\SmartPricing\SmartPricingGrpc$MethodHandlers.class
 generated\grpc\SalesMonitor\SalesHeatmapGrpc$SalesHeatmapBaseDescriptorSupplier.class
+distsys\retail\SmartPricingGUI$1.class
 generated\grpc\SecurityMonitor\SecurityAlert.class
 generated\grpc\SecurityMonitor\Empty$1.class
 generated\grpc\SecurityMonitor\StoreSecurityGrpc$StoreSecurityImplBase.class
@@ -82,6 +85,7 @@ generated\grpc\InventoryRefill\InventoryRestockGrpc$InventoryRestockFileDescript
 generated\grpc\InventoryRefill\InventoryRestockGrpc.class
 generated\grpc\InventoryRefill\InventoryRestockGrpc$InventoryRestockStub.class
 generated\grpc\SalesHeatmap\SalesRequest.class
+distsys\retail\SmartPricingGUI$3.class
 generated\grpc\SecurityMonitor\StoreSecurityGrpc$StoreSecurityStub.class
 generated\grpc\SalesMonitor\SalesHeatmapGrpc$2.class
 generated\grpc\SmartPricing\ProductResponseOrBuilder.class
@@ -99,6 +103,7 @@ generated\grpc\SecurityMonitor\StoreSecurityGrpc$MethodHandlers.class
 generated\grpc\SmartPricing\PriceUpdateRequestOrBuilder.class
 generated\grpc\SalesHeatmap\SalesHeatmapGrpc$SalesHeatmapStub.class
 generated\grpc\InventoryRefill\RestockRequest$1.class
+distsys\retail\SmartPricingGUI.class
 generated\grpc\SalesHeatmap\SalesUpdate.class
 generated\grpc\SecurityMonitor\StoreSecurityGrpc$1.class
 generated\grpc\SmartPricing\ProductRequest$1.class
@@ -121,6 +126,7 @@ generated\grpc\SmartPricing\ProductResponse$1.class
 generated\grpc\SalesHeatmap\SalesRequest$1.class
 distsys\retail\InventoryRefillGUI$2.class
 generated\grpc\SmartPricing\SmartPricingGrpc$1.class
+distsys\retail\SmartPricingGUI$4.class
 generated\grpc\SalesMonitor\SalesHeatmapImpl.class
 generated\grpc\InventoryRefill\RestockRequestOrBuilder.class
 generated\grpc\SalesHeatmap\SalesHeatmapGrpc$SalesHeatmapFutureStub.class

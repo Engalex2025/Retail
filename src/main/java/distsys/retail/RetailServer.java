@@ -7,6 +7,9 @@ package distsys.retail;
 import generated.grpc.InventoryRefill.InventoryRestockGrpc;
 import generated.grpc.InventoryRefill.RestockRequest;
 import generated.grpc.InventoryRefill.RestockSummary;
+import generated.grpc.SmartPricing.SmartPricingGrpc;
+import generated.grpc.SmartPricing.PriceUpdateRequest;
+import generated.grpc.SmartPricing.PriceUpdateResponse;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
@@ -15,13 +18,15 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author yourname
+ * @author Alexandre
  */
 public class RetailServer{
     private static final Logger logger = Logger.getLogger(RetailServer.class.getName());
     
     public static void main(String [] args){
        InventoryRestockImpl inventoryRefill = new InventoryRestockImpl();
+       
+       SmartPricingImpl smartPricing = new SmartPricingImpl();
        
         int port = 50051;
         
@@ -87,6 +92,22 @@ public class RetailServer{
                     responseObserver.onCompleted();
                 }
             };
+        }
+    }
+       public static class SmartPricingImpl extends SmartPricingGrpc.SmartPricingImplBase {
+        @Override
+        public void updatePrice(PriceUpdateRequest request, StreamObserver<PriceUpdateResponse> responseObserver) {
+            String productId = request.getProductId();
+            double newPrice = request.getNewPrice();
+
+            // Lógica de atualização de preço (simulação)
+            boolean success = true; // Sucesso por padrão (pode adicionar lógica real aqui)
+            PriceUpdateResponse response = PriceUpdateResponse.newBuilder()
+                    .setSuccess(success)
+                    .build();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
         }
     }
 }

@@ -17,7 +17,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * @author
+ * @Alexandre
  */
 public class InventoryRefillGUI extends javax.swing.JFrame {
 
