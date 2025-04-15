@@ -4,21 +4,18 @@
  */
 package distsys.retail;
 
+import generated.grpc.SmartPricing.PriceUpdateRequest;
+import generated.grpc.SmartPricing.PriceUpdateResponse;
 import generated.grpc.SmartPricing.SmartPricingGrpc;
 import generated.grpc.SmartPricing.SmartPricingGrpc.SmartPricingBlockingStub;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import java.util.Random;
-import java.util.logging.Logger;
-
 /**
  *
  * @author Alexandre
  */
-public class SmartPricingGUI extends javax.swing.JFrame {
-
-    private static final Logger logger = Logger.getLogger(SmartPricingGUI.class.getName());
-    
+public class SmartPricingGUI extends javax.swing.JFrame { 
     private ManagedChannel channel;
     private static SmartPricingBlockingStub blockingStub;
 
@@ -98,20 +95,6 @@ public class SmartPricingGUI extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(209, 209, 209))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(productID, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(170, 170, 170))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(getPrice)
-                        .addGap(209, 209, 209))))
             .addGroup(layout.createSequentialGroup()
                 .addGap(158, 158, 158)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -127,6 +110,20 @@ public class SmartPricingGUI extends javax.swing.JFrame {
                             .addComponent(productPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(0, 169, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(productID, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(170, 170, 170))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(getPrice)
+                        .addGap(209, 209, 209))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(222, 222, 222))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -160,18 +157,26 @@ public class SmartPricingGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void productIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_productIDActionPerformed
+                                         
     String id = productID.getText().trim();
 
     if (id.isEmpty()) {
         outputArea.append("️ Product ID field is empty. Please enter a valid ID.\n");
-    } else {
-        outputArea.append(" Product ID entered: " + id + "\n");
+        return;
     }
 
+    // Validating that ID starts with 'R' with until 4 digits followed
+    if (!id.matches("R\\d{1,4}")) {
+        outputArea.append("Invalid Product ID. It starts with 'R' followed by up to 4 digits.\n");
+        return;
+    }
+
+    outputArea.append("Product ID added: " + id + "\n");
 
     }//GEN-LAST:event_productIDActionPerformed
 
     private void getPriceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getPriceActionPerformed
+                                                                                                                     
     String id = productID.getText().trim();
 
     if (id.isEmpty()) {
@@ -179,86 +184,101 @@ public class SmartPricingGUI extends javax.swing.JFrame {
         return;
     }
 
-    // Generate random price between 10.00 and 100.00
-    double basePrice = 10.0 + (90.0 * random.nextDouble());
-
-    // Applying adjustments
-    int adjustmentType = random.nextInt(4);
-    double adjustedPrice = basePrice;
-    String adjustmentDescription = "";
-
-    switch (adjustmentType) {
-        case 0:
-            adjustedPrice = basePrice * 0.90;
-            adjustmentDescription = "10% discount";
-            break;
-        case 1:
-            adjustedPrice = basePrice * 0.80;
-            adjustmentDescription = "20% discount";
-            break;
-        case 2:
-            adjustedPrice = basePrice * 1.10;
-            adjustmentDescription = "10% increase";
-            break;
-        case 3:
-            adjustedPrice = basePrice * 1.20;
-            adjustmentDescription = "20% increase";
-            break;
+    // Validate that the ID starts with 'R' followed by up to 4 digits
+    if (!id.matches("R\\d{1,4}")) {
+        outputArea.append("Invalid Product ID. It should start with 'R' followed by up to 4 digits.\n");
+        return;
     }
 
-    // Update textfields with new prices
-    productPrice.setText(String.format("%.2f", basePrice));
-    priceUpdated.setText(String.format("%.2f", adjustedPrice));
+    // Generate random price between 10.00 and 100.00
+    currentPrice = 10.0 + (90.0 * random.nextDouble());
 
-    // Update the results history field
-    String result = "Product ID: " + id + 
-                    "\nBase Price: €" + String.format("%.2f", basePrice) +
-                    "\nAdjusted Price: €" + String.format("%.2f", adjustedPrice) +
-                    " (" + adjustmentDescription + ")\n\n";
+    productPrice.setText(String.format("%.2f", currentPrice));
 
-    outputArea.append(result);
+    // Clearing the 'priceUpdated' field when a new price is added
+    priceUpdated.setText("");
+
+    outputArea.append("Product ID Price " + id + ": €" 
+                      + String.format("%.2f", currentPrice) + "\n");
+
 
 
     }//GEN-LAST:event_getPriceActionPerformed
 
     private void updatePriceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updatePriceActionPerformed
+                                           
+
     String id = productID.getText().trim();
-    String priceText = priceUpdated.getText().trim();
 
-    if (id.isEmpty() || priceText.isEmpty()) {
-        outputArea.append("Please enter both the Product ID and generate a price before updating.\n\n");
+    if (id.isEmpty()) {
+        outputArea.append("Please enter a product ID.\n");
         return;
     }
 
-    double newPrice;
+    // Get current price from field
+    String priceText = productPrice.getText().trim();
+    if (priceText.isEmpty()) {
+        outputArea.append("Please generate a base price first.\n");
+        return;
+    }
+
     try {
-        newPrice = Double.parseDouble(priceText);
+        currentPrice = Double.parseDouble(priceText);
     } catch (NumberFormatException e) {
-        outputArea.append("Invalid price format. Please enter a valid number.\n\n");
+        outputArea.append("Invalid base price format.\n");
         return;
     }
 
-    // Cria a request gRPC
-      generated.grpc.SmartPricing.PriceUpdateRequest request =
-        generated.grpc.SmartPricing.PriceUpdateRequest.newBuilder()
-            .setProductId(id)
-            .setNewPrice(newPrice)
-            .build();
+    // Applying Price Updates
+    int adjustmentType = random.nextInt(4);
+    double adjustedPrice = currentPrice;
+    String adjustmentDescription = "";
 
-    try {
-       generated.grpc.SmartPricing.PriceUpdateResponse response = blockingStub.updatePrice(request);
-        boolean success = response.getSuccess();
-
-
-        outputArea.append("Price update sent successfully.\n");
-        outputArea.append("Product ID: " + id + "\n");
-        outputArea.append("New Price: €" + String.format("%.2f", newPrice) + "\n");
-        outputArea.append("Server Status: " + success + "\n\n");
-
-    } catch (Exception e) {
-        outputArea.append("Error contacting gRPC server: " + e.getMessage() + "\n\n");
-        e.printStackTrace();
+    switch (adjustmentType) {
+        case 0:
+            adjustedPrice = currentPrice * 0.90;
+            adjustmentDescription = "10% discount";
+            break;
+        case 1:
+            adjustedPrice = currentPrice * 0.80;
+            adjustmentDescription = "20% discount";
+            break;
+        case 2:
+            adjustedPrice = currentPrice * 1.10;
+            adjustmentDescription = "10% increase";
+            break;
+        case 3:
+            adjustedPrice = currentPrice * 1.20;
+            adjustmentDescription = "20% increase";
+            break;
     }
+
+    priceUpdated.setText(String.format("%.2f", adjustedPrice));
+
+    // Append result to outputArea with the description of the adjustment
+    String result = "Product ID: " + id + 
+                    "\nBase Price: €" + String.format("%.2f", currentPrice) +
+                    "\nAdjusted Price: €" + String.format("%.2f", adjustedPrice) +
+                    " (" + adjustmentDescription + ")\n\n";
+
+    outputArea.append(result);
+
+    // Call gRPC to update the price on the server
+    PriceUpdateRequest request = PriceUpdateRequest.newBuilder()
+            .setProductId(id)
+            .setNewPrice(adjustedPrice)
+            .build();
+    
+    // Make the gRPC call to update the price
+    PriceUpdateResponse response = blockingStub.updatePrice(request);
+
+    // Checking if the update was successful 
+    if (response.getSuccess()) {
+        outputArea.append("Price update was successful!\n");
+    } else {
+        outputArea.append("Price update failed.\n");
+    }
+
 
 
     }//GEN-LAST:event_updatePriceActionPerformed
