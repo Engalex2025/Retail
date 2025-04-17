@@ -24,6 +24,31 @@ public final class SalesHeatmapImpl {
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_retail_SalesUpdate_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_retail_EmptyRequest_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_retail_EmptyRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_retail_SalesPerformanceResponse_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_retail_SalesPerformanceResponse_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_retail_AreaPerformance_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_retail_AreaPerformance_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_retail_RelocationRequest_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_retail_RelocationRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_retail_RelocationResponse_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_retail_RelocationResponse_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -36,10 +61,19 @@ public final class SalesHeatmapImpl {
       "\n\022SalesHeatmap.proto\022\006retail\"\"\n\014SalesReq" +
       "uest\022\022\n\nsection_id\030\001 \001(\t\"G\n\013SalesUpdate\022" +
       "\022\n\nsection_id\030\001 \001(\t\022\021\n\tnew_sales\030\002 \001(\005\022\021" +
-      "\n\ttimestamp\030\003 \001(\t2Q\n\014SalesHeatmap\022A\n\022Str" +
-      "eamSalesUpdates\022\024.retail.SalesRequest\032\023." +
-      "retail.SalesUpdate0\001B1\n\033generated.grpc.S" +
-      "alesHeatmapB\020SalesHeatmapImplP\001b\006proto3"
+      "\n\ttimestamp\030\003 \001(\t\"\016\n\014EmptyRequest\"I\n\030Sal" +
+      "esPerformanceResponse\022-\n\014performances\030\001 " +
+      "\003(\0132\027.retail.AreaPerformance\"1\n\017AreaPerf" +
+      "ormance\022\017\n\007area_id\030\001 \001(\t\022\r\n\005sales\030\002 \001(\005\"" +
+      "B\n\021RelocationRequest\022-\n\014performances\030\001 \003" +
+      "(\0132\027.retail.AreaPerformance\")\n\022Relocatio" +
+      "nResponse\022\023\n\013suggestions\030\001 \003(\t2\265\001\n\014Sales" +
+      "Heatmap\022R\n\030GenerateSalesPerformance\022\024.re" +
+      "tail.EmptyRequest\032 .retail.SalesPerforma" +
+      "nceResponse\022Q\n\030SuggestProductRelocation\022" +
+      "\031.retail.RelocationRequest\032\032.retail.Relo" +
+      "cationResponseB1\n\033generated.grpc.SalesHe" +
+      "atmapB\020SalesHeatmapImplP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -57,6 +91,36 @@ public final class SalesHeatmapImpl {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_retail_SalesUpdate_descriptor,
         new java.lang.String[] { "SectionId", "NewSales", "Timestamp", });
+    internal_static_retail_EmptyRequest_descriptor =
+      getDescriptor().getMessageTypes().get(2);
+    internal_static_retail_EmptyRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_retail_EmptyRequest_descriptor,
+        new java.lang.String[] { });
+    internal_static_retail_SalesPerformanceResponse_descriptor =
+      getDescriptor().getMessageTypes().get(3);
+    internal_static_retail_SalesPerformanceResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_retail_SalesPerformanceResponse_descriptor,
+        new java.lang.String[] { "Performances", });
+    internal_static_retail_AreaPerformance_descriptor =
+      getDescriptor().getMessageTypes().get(4);
+    internal_static_retail_AreaPerformance_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_retail_AreaPerformance_descriptor,
+        new java.lang.String[] { "AreaId", "Sales", });
+    internal_static_retail_RelocationRequest_descriptor =
+      getDescriptor().getMessageTypes().get(5);
+    internal_static_retail_RelocationRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_retail_RelocationRequest_descriptor,
+        new java.lang.String[] { "Performances", });
+    internal_static_retail_RelocationResponse_descriptor =
+      getDescriptor().getMessageTypes().get(6);
+    internal_static_retail_RelocationResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_retail_RelocationResponse_descriptor,
+        new java.lang.String[] { "Suggestions", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

@@ -15,35 +15,66 @@ public final class SalesHeatmapGrpc {
   public static final String SERVICE_NAME = "retail.SalesHeatmap";
 
   // Static method descriptors that strictly reflect the proto.
-  private static volatile io.grpc.MethodDescriptor<generated.grpc.SalesHeatmap.SalesRequest,
-      generated.grpc.SalesHeatmap.SalesUpdate> getStreamSalesUpdatesMethod;
+  private static volatile io.grpc.MethodDescriptor<generated.grpc.SalesHeatmap.EmptyRequest,
+      generated.grpc.SalesHeatmap.SalesPerformanceResponse> getGenerateSalesPerformanceMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "StreamSalesUpdates",
-      requestType = generated.grpc.SalesHeatmap.SalesRequest.class,
-      responseType = generated.grpc.SalesHeatmap.SalesUpdate.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
-  public static io.grpc.MethodDescriptor<generated.grpc.SalesHeatmap.SalesRequest,
-      generated.grpc.SalesHeatmap.SalesUpdate> getStreamSalesUpdatesMethod() {
-    io.grpc.MethodDescriptor<generated.grpc.SalesHeatmap.SalesRequest, generated.grpc.SalesHeatmap.SalesUpdate> getStreamSalesUpdatesMethod;
-    if ((getStreamSalesUpdatesMethod = SalesHeatmapGrpc.getStreamSalesUpdatesMethod) == null) {
+      fullMethodName = SERVICE_NAME + '/' + "GenerateSalesPerformance",
+      requestType = generated.grpc.SalesHeatmap.EmptyRequest.class,
+      responseType = generated.grpc.SalesHeatmap.SalesPerformanceResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<generated.grpc.SalesHeatmap.EmptyRequest,
+      generated.grpc.SalesHeatmap.SalesPerformanceResponse> getGenerateSalesPerformanceMethod() {
+    io.grpc.MethodDescriptor<generated.grpc.SalesHeatmap.EmptyRequest, generated.grpc.SalesHeatmap.SalesPerformanceResponse> getGenerateSalesPerformanceMethod;
+    if ((getGenerateSalesPerformanceMethod = SalesHeatmapGrpc.getGenerateSalesPerformanceMethod) == null) {
       synchronized (SalesHeatmapGrpc.class) {
-        if ((getStreamSalesUpdatesMethod = SalesHeatmapGrpc.getStreamSalesUpdatesMethod) == null) {
-          SalesHeatmapGrpc.getStreamSalesUpdatesMethod = getStreamSalesUpdatesMethod =
-              io.grpc.MethodDescriptor.<generated.grpc.SalesHeatmap.SalesRequest, generated.grpc.SalesHeatmap.SalesUpdate>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "StreamSalesUpdates"))
+        if ((getGenerateSalesPerformanceMethod = SalesHeatmapGrpc.getGenerateSalesPerformanceMethod) == null) {
+          SalesHeatmapGrpc.getGenerateSalesPerformanceMethod = getGenerateSalesPerformanceMethod =
+              io.grpc.MethodDescriptor.<generated.grpc.SalesHeatmap.EmptyRequest, generated.grpc.SalesHeatmap.SalesPerformanceResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "GenerateSalesPerformance"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  generated.grpc.SalesHeatmap.SalesRequest.getDefaultInstance()))
+                  generated.grpc.SalesHeatmap.EmptyRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  generated.grpc.SalesHeatmap.SalesUpdate.getDefaultInstance()))
-              .setSchemaDescriptor(new SalesHeatmapMethodDescriptorSupplier("StreamSalesUpdates"))
+                  generated.grpc.SalesHeatmap.SalesPerformanceResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new SalesHeatmapMethodDescriptorSupplier("GenerateSalesPerformance"))
               .build();
         }
       }
     }
-    return getStreamSalesUpdatesMethod;
+    return getGenerateSalesPerformanceMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<generated.grpc.SalesHeatmap.RelocationRequest,
+      generated.grpc.SalesHeatmap.RelocationResponse> getSuggestProductRelocationMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "SuggestProductRelocation",
+      requestType = generated.grpc.SalesHeatmap.RelocationRequest.class,
+      responseType = generated.grpc.SalesHeatmap.RelocationResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<generated.grpc.SalesHeatmap.RelocationRequest,
+      generated.grpc.SalesHeatmap.RelocationResponse> getSuggestProductRelocationMethod() {
+    io.grpc.MethodDescriptor<generated.grpc.SalesHeatmap.RelocationRequest, generated.grpc.SalesHeatmap.RelocationResponse> getSuggestProductRelocationMethod;
+    if ((getSuggestProductRelocationMethod = SalesHeatmapGrpc.getSuggestProductRelocationMethod) == null) {
+      synchronized (SalesHeatmapGrpc.class) {
+        if ((getSuggestProductRelocationMethod = SalesHeatmapGrpc.getSuggestProductRelocationMethod) == null) {
+          SalesHeatmapGrpc.getSuggestProductRelocationMethod = getSuggestProductRelocationMethod =
+              io.grpc.MethodDescriptor.<generated.grpc.SalesHeatmap.RelocationRequest, generated.grpc.SalesHeatmap.RelocationResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "SuggestProductRelocation"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.grpc.SalesHeatmap.RelocationRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  generated.grpc.SalesHeatmap.RelocationResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new SalesHeatmapMethodDescriptorSupplier("SuggestProductRelocation"))
+              .build();
+        }
+      }
+    }
+    return getSuggestProductRelocationMethod;
   }
 
   /**
@@ -96,23 +127,40 @@ public final class SalesHeatmapGrpc {
 
     /**
      * <pre>
-     * Stream live sales updates for a section (Server Streaming)
+     * Send sales performance from different areas
      * </pre>
      */
-    public void streamSalesUpdates(generated.grpc.SalesHeatmap.SalesRequest request,
-        io.grpc.stub.StreamObserver<generated.grpc.SalesHeatmap.SalesUpdate> responseObserver) {
-      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getStreamSalesUpdatesMethod(), responseObserver);
+    public void generateSalesPerformance(generated.grpc.SalesHeatmap.EmptyRequest request,
+        io.grpc.stub.StreamObserver<generated.grpc.SalesHeatmap.SalesPerformanceResponse> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getGenerateSalesPerformanceMethod(), responseObserver);
+    }
+
+    /**
+     * <pre>
+     * Suggest location changes based on performance
+     * </pre>
+     */
+    public void suggestProductRelocation(generated.grpc.SalesHeatmap.RelocationRequest request,
+        io.grpc.stub.StreamObserver<generated.grpc.SalesHeatmap.RelocationResponse> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getSuggestProductRelocationMethod(), responseObserver);
     }
 
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
-            getStreamSalesUpdatesMethod(),
-            io.grpc.stub.ServerCalls.asyncServerStreamingCall(
+            getGenerateSalesPerformanceMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
               new MethodHandlers<
-                generated.grpc.SalesHeatmap.SalesRequest,
-                generated.grpc.SalesHeatmap.SalesUpdate>(
-                  this, METHODID_STREAM_SALES_UPDATES)))
+                generated.grpc.SalesHeatmap.EmptyRequest,
+                generated.grpc.SalesHeatmap.SalesPerformanceResponse>(
+                  this, METHODID_GENERATE_SALES_PERFORMANCE)))
+          .addMethod(
+            getSuggestProductRelocationMethod(),
+            io.grpc.stub.ServerCalls.asyncUnaryCall(
+              new MethodHandlers<
+                generated.grpc.SalesHeatmap.RelocationRequest,
+                generated.grpc.SalesHeatmap.RelocationResponse>(
+                  this, METHODID_SUGGEST_PRODUCT_RELOCATION)))
           .build();
     }
   }
@@ -133,13 +181,24 @@ public final class SalesHeatmapGrpc {
 
     /**
      * <pre>
-     * Stream live sales updates for a section (Server Streaming)
+     * Send sales performance from different areas
      * </pre>
      */
-    public void streamSalesUpdates(generated.grpc.SalesHeatmap.SalesRequest request,
-        io.grpc.stub.StreamObserver<generated.grpc.SalesHeatmap.SalesUpdate> responseObserver) {
-      io.grpc.stub.ClientCalls.asyncServerStreamingCall(
-          getChannel().newCall(getStreamSalesUpdatesMethod(), getCallOptions()), request, responseObserver);
+    public void generateSalesPerformance(generated.grpc.SalesHeatmap.EmptyRequest request,
+        io.grpc.stub.StreamObserver<generated.grpc.SalesHeatmap.SalesPerformanceResponse> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getGenerateSalesPerformanceMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     * <pre>
+     * Suggest location changes based on performance
+     * </pre>
+     */
+    public void suggestProductRelocation(generated.grpc.SalesHeatmap.RelocationRequest request,
+        io.grpc.stub.StreamObserver<generated.grpc.SalesHeatmap.RelocationResponse> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getSuggestProductRelocationMethod(), getCallOptions()), request, responseObserver);
     }
   }
 
@@ -159,13 +218,22 @@ public final class SalesHeatmapGrpc {
 
     /**
      * <pre>
-     * Stream live sales updates for a section (Server Streaming)
+     * Send sales performance from different areas
      * </pre>
      */
-    public java.util.Iterator<generated.grpc.SalesHeatmap.SalesUpdate> streamSalesUpdates(
-        generated.grpc.SalesHeatmap.SalesRequest request) {
-      return io.grpc.stub.ClientCalls.blockingServerStreamingCall(
-          getChannel(), getStreamSalesUpdatesMethod(), getCallOptions(), request);
+    public generated.grpc.SalesHeatmap.SalesPerformanceResponse generateSalesPerformance(generated.grpc.SalesHeatmap.EmptyRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getGenerateSalesPerformanceMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * Suggest location changes based on performance
+     * </pre>
+     */
+    public generated.grpc.SalesHeatmap.RelocationResponse suggestProductRelocation(generated.grpc.SalesHeatmap.RelocationRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getSuggestProductRelocationMethod(), getCallOptions(), request);
     }
   }
 
@@ -182,9 +250,32 @@ public final class SalesHeatmapGrpc {
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new SalesHeatmapFutureStub(channel, callOptions);
     }
+
+    /**
+     * <pre>
+     * Send sales performance from different areas
+     * </pre>
+     */
+    public com.google.common.util.concurrent.ListenableFuture<generated.grpc.SalesHeatmap.SalesPerformanceResponse> generateSalesPerformance(
+        generated.grpc.SalesHeatmap.EmptyRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getGenerateSalesPerformanceMethod(), getCallOptions()), request);
+    }
+
+    /**
+     * <pre>
+     * Suggest location changes based on performance
+     * </pre>
+     */
+    public com.google.common.util.concurrent.ListenableFuture<generated.grpc.SalesHeatmap.RelocationResponse> suggestProductRelocation(
+        generated.grpc.SalesHeatmap.RelocationRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getSuggestProductRelocationMethod(), getCallOptions()), request);
+    }
   }
 
-  private static final int METHODID_STREAM_SALES_UPDATES = 0;
+  private static final int METHODID_GENERATE_SALES_PERFORMANCE = 0;
+  private static final int METHODID_SUGGEST_PRODUCT_RELOCATION = 1;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -203,9 +294,13 @@ public final class SalesHeatmapGrpc {
     @java.lang.SuppressWarnings("unchecked")
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
-        case METHODID_STREAM_SALES_UPDATES:
-          serviceImpl.streamSalesUpdates((generated.grpc.SalesHeatmap.SalesRequest) request,
-              (io.grpc.stub.StreamObserver<generated.grpc.SalesHeatmap.SalesUpdate>) responseObserver);
+        case METHODID_GENERATE_SALES_PERFORMANCE:
+          serviceImpl.generateSalesPerformance((generated.grpc.SalesHeatmap.EmptyRequest) request,
+              (io.grpc.stub.StreamObserver<generated.grpc.SalesHeatmap.SalesPerformanceResponse>) responseObserver);
+          break;
+        case METHODID_SUGGEST_PRODUCT_RELOCATION:
+          serviceImpl.suggestProductRelocation((generated.grpc.SalesHeatmap.RelocationRequest) request,
+              (io.grpc.stub.StreamObserver<generated.grpc.SalesHeatmap.RelocationResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -268,7 +363,8 @@ public final class SalesHeatmapGrpc {
         if (result == null) {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new SalesHeatmapFileDescriptorSupplier())
-              .addMethod(getStreamSalesUpdatesMethod())
+              .addMethod(getGenerateSalesPerformanceMethod())
+              .addMethod(getSuggestProductRelocationMethod())
               .build();
         }
       }

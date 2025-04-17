@@ -6,8 +6,11 @@ option java_outer_classname = "SalesHeatmapImpl";
 package retail;
 
 service SalesHeatmap {
-    // Stream live sales updates for a section (Server Streaming)
-    rpc StreamSalesUpdates(SalesRequest) returns (stream SalesUpdate);
+    // Send sales performance from different areas
+    rpc GenerateSalesPerformance(EmptyRequest) returns (SalesPerformanceResponse);
+
+    // Suggest location changes based on performance
+    rpc SuggestProductRelocation(RelocationRequest) returns (RelocationResponse);
 }
 
 message SalesRequest {
@@ -20,6 +23,21 @@ message SalesUpdate {
     string timestamp = 3;
 }
 
+message EmptyRequest {}
 
+message SalesPerformanceResponse {
+    repeated AreaPerformance performances = 1;
+}
 
+message AreaPerformance {
+    string area_id = 1;
+    int32 sales = 2;
+}
 
+message RelocationRequest {
+    repeated AreaPerformance performances = 1;
+}
+
+message RelocationResponse {
+    repeated string suggestions = 1;
+}

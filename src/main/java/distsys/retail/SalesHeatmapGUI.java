@@ -4,17 +4,22 @@
  */
 package distsys.retail;
 
+import generated.grpc.SalesHeatmap.AreaPerformance;
 import generated.grpc.SalesHeatmap.SalesHeatmapGrpc;
-import generated.grpc.SalesHeatmap.SalesRequest;
+import generated.grpc.SalesHeatmap.RelocationRequest;
+import generated.grpc.SalesHeatmap.RelocationResponse;
 import generated.grpc.SalesHeatmap.SalesUpdate;
+import generated.grpc.SalesHeatmap.SalesRequest;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.logging.Logger;
-import javax.swing.SwingUtilities;
-import javax.swing.JOptionPane;
+import javax.swing.UnsupportedLookAndFeelException;
 
-///**
+/**
  *
  * @Alexandre
  */
@@ -22,32 +27,38 @@ public class SalesHeatmapGUI extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(SalesHeatmapGUI.class.getName());
     private static SalesHeatmapGrpc.SalesHeatmapStub asyncStub;
+    private static SalesHeatmapGrpc.SalesHeatmapBlockingStub blockingStub;
     ManagedChannel channel;
+    
+     private final String[] sections = {"A101", "B202", "C303", "D404", "E505", "F606", "G707", "H808"};
+    private final int[] salesData = new int[sections.length];
+    private boolean salesTracked = false;
 
     /**
      * Creates new form SalesHeatmapGUI
      */
     public SalesHeatmapGUI() {
         initComponents();
+       outputUpdates.setEnabled(true);
+    outputUpdates.setEditable(false);
+
+    outputUpdates.append("Interface initialized!\n");
+
 
         channel = ManagedChannelBuilder
-                .forAddress("localhost", 50051) // ou use o hostname do seu hosts
+                .forAddress("localhost", 50051)
                 .usePlaintext()
                 .build();
-
-        asyncStub = SalesHeatmapGrpc.newStub(channel);
-
-        // Fechar canal ao fechar a janela
-        this.addWindowListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowClosing(java.awt.event.WindowEvent e) {
-                if (channel != null) {
-                    channel.shutdown();
-                }
-                System.exit(0);
-            }
-        });
+       asyncStub = SalesHeatmapGrpc.newStub(channel);
+       blockingStub = SalesHeatmapGrpc.newBlockingStub(channel);
+    
+    
     }
+     private int getSalesPerformance(String sectionId) {
+        Random rand = new Random();
+        return rand.nextInt(50); // Simula vendas
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -59,103 +70,137 @@ public class SalesHeatmapGUI extends javax.swing.JFrame {
     private void initComponents() {
 
         jComboBox1 = new javax.swing.JComboBox<>();
-        jLabel1 = new javax.swing.JLabel();
-        startStream = new javax.swing.JButton();
-        sectionID = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        trackSales = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         outputUpdates = new javax.swing.JTextArea();
+        realocationSuggestions = new javax.swing.JButton();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        suggestionOutput = new javax.swing.JTextArea();
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setText("Enter Section ID:");
-
-        startStream.setText("Start Stream");
-        startStream.addActionListener(new java.awt.event.ActionListener() {
+        trackSales.setText("Track Sales");
+        trackSales.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                startStreamActionPerformed(evt);
+                trackSalesActionPerformed(evt);
             }
         });
 
         outputUpdates.setColumns(20);
+        outputUpdates.setLineWrap(true);
         outputUpdates.setRows(5);
+        outputUpdates.setWrapStyleWord(true);
         jScrollPane2.setViewportView(outputUpdates);
+
+        realocationSuggestions.setText("Suggestions");
+        realocationSuggestions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                realocationSuggestionsActionPerformed(evt);
+            }
+        });
+
+        suggestionOutput.setColumns(20);
+        suggestionOutput.setLineWrap(true);
+        suggestionOutput.setRows(5);
+        suggestionOutput.setWrapStyleWord(true);
+        jScrollPane4.setViewportView(suggestionOutput);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 414, Short.MAX_VALUE)
+            .addComponent(jScrollPane4)
             .addGroup(layout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addComponent(jLabel1)
-                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(startStream)
-                    .addComponent(sectionID, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(171, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(28, 28, 28)
+                        .addComponent(trackSales))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(23, 23, 23)
+                        .addComponent(realocationSuggestions)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(53, 53, 53)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(sectionID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
-                .addGap(35, 35, 35)
-                .addComponent(startStream)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addComponent(trackSales)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                .addComponent(realocationSuggestions)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void startStreamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startStreamActionPerformed
-                                            
-    String sectionId = sectionID.getText().trim();
+    private void trackSalesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trackSalesActionPerformed
+       outputUpdates.setText(""); // Clear output
 
-    if (sectionId.isEmpty()) {
-        outputUpdates.append("Please enter a Section ID before starting the stream.\n");
-        return;
-    }
-
-    outputUpdates.setText(""); // Clear previous messages
-    outputUpdates.append("Starting sales stream for Section: " + sectionId + "...\n");
-
-    SalesRequest request = SalesRequest.newBuilder()
-            .setSectionId(sectionId)
-            .build();
-
-    asyncStub.streamSalesUpdates(request, new StreamObserver<SalesUpdate>() {
-        @Override
-        public void onNext(SalesUpdate update) {
-            String msg = "Update - Section: " + update.getSectionId()
-                       + " | Sales: " + update.getNewSales()
-                       + " | Time: " + update.getTimestamp() + "\n";
-            SwingUtilities.invokeLater(() -> {
-                outputUpdates.append(msg);
-            });
-        }
-
-        @Override
-        public void onError(Throwable t) {
-            SwingUtilities.invokeLater(() -> {
-                outputUpdates.append("Error receiving updates: " + t.getMessage() + "\n");
-            });
-        }
-
-        @Override
-        public void onCompleted() {
-            SwingUtilities.invokeLater(() -> {
-                outputUpdates.append("Stream completed for Section " + sectionId + ".\n");
-            });
-        }
-    });
+for (int i = 0; i < sections.length; i++) {
+    salesData[i] = getSalesPerformance(sections[i]); // Save sales data
+    outputUpdates.append("Section: " + sections[i] + " | Sales: " + salesData[i] + "\n");
 }
 
-    }//GEN-LAST:event_startStreamActionPerformed
+salesTracked = true; // Flag to indicate that data is ready
+
+// Find best and worst sections
+String bestSection = null, worstSection = null;
+int highest = Integer.MIN_VALUE, lowest = Integer.MAX_VALUE;
+
+for (int i = 0; i < salesData.length; i++) {
+    if (salesData[i] > highest) {
+        highest = salesData[i];
+        bestSection = sections[i];
+    }
+    if (salesData[i] < lowest) {
+        lowest = salesData[i];
+        worstSection = sections[i];
+    }
+}
+
+outputUpdates.append("Sales tracking completed.\n");
+outputUpdates.append("Best Section: " + bestSection + " | Sales: " + highest + "\n");
+outputUpdates.append("Worst Section: " + worstSection + " | Sales: " + lowest + "\n");
+
+    }//GEN-LAST:event_trackSalesActionPerformed
+
+    private void realocationSuggestionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_realocationSuggestionsActionPerformed
+                                                                                                                                                                                                                                                                                                                                    
+  suggestionOutput.setText(""); // Clear output
+
+if (!salesTracked) {
+    suggestionOutput.setText("Please click 'Track Sales' first.\n");
+    return;
+}
+
+int maxSales = Integer.MIN_VALUE, minSales = Integer.MAX_VALUE;
+String bestSection = "", worstSection = "";
+
+for (int i = 0; i < sections.length; i++) {
+    int sales = salesData[i];
+    if (sales > maxSales) {
+        maxSales = sales;
+        bestSection = sections[i];
+    }
+    if (sales < minSales) {
+        minSales = sales;
+        worstSection = sections[i];
+    }
+}
+
+suggestionOutput.append("Move products from Section " + worstSection + " (Sales: " + minSales + ") to Section " + bestSection + " (Sales: " + maxSales + ").\n");
+suggestionOutput.append("Relocation suggestions completed.\n");
+
+
+
+    }//GEN-LAST:event_realocationSuggestionsActionPerformed
 
     /**
      * @param args the command line arguments
@@ -194,10 +239,12 @@ public class SalesHeatmapGUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTextArea outputUpdates;
-    private javax.swing.JTextField sectionID;
-    private javax.swing.JButton startStream;
+    private javax.swing.JButton realocationSuggestions;
+    private javax.swing.JTextArea suggestionOutput;
+    private javax.swing.JButton trackSales;
     // End of variables declaration//GEN-END:variables
 }

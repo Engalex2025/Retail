@@ -7,13 +7,26 @@ package distsys.retail;
 import generated.grpc.InventoryRefill.InventoryRestockGrpc;
 import generated.grpc.InventoryRefill.RestockRequest;
 import generated.grpc.InventoryRefill.RestockSummary;
+import generated.grpc.SalesHeatmap.AreaPerformance;
+import generated.grpc.SalesHeatmap.RelocationRequest;
+import generated.grpc.SalesHeatmap.RelocationResponse;
+
 import generated.grpc.SmartPricing.SmartPricingGrpc;
 import generated.grpc.SmartPricing.PriceUpdateRequest;
 import generated.grpc.SmartPricing.PriceUpdateResponse;
+
+import generated.grpc.SalesHeatmap.SalesHeatmapGrpc;
+import generated.grpc.SalesHeatmap.SalesRequest;
+import generated.grpc.SalesHeatmap.SalesUpdate;
+
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 import java.io.IOException;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.logging.Logger;
 
 /**
@@ -28,11 +41,16 @@ public class RetailServer{
        
        SmartPricingImpl smartPricing = new SmartPricingImpl();
        
+       SalesHeatmapImpl salesHeatmap = new SalesHeatmapImpl();
+
+       
         int port = 50051;
         
         try{
             Server server = ServerBuilder.forPort(port)
                     .addService(inventoryRefill)
+                    .addService(smartPricing)      
+                    .addService(salesHeatmap) 
                     .build()
                     .start();
             logger.info("Server started, listening on " + port);
@@ -109,5 +127,30 @@ public class RetailServer{
             responseObserver.onNext(response);
             responseObserver.onCompleted();
         }
+       }
+            
+           public static class SalesHeatmapImpl extends SalesHeatmapGrpc.SalesHeatmapImplBase {
+
+       
+        @Override
+public void suggestProductRelocation(RelocationRequest request, StreamObserver<RelocationResponse> responseObserver) {
+    // Verificando a lista de performances do RelocationRequest
+    List<String> suggestions = new ArrayList<>();
+
+    // Acessando a lista de performances
+    for (AreaPerformance performance : request.getPerformancesList()) {
+        // Lógica para gerar sugestões com base nas performances
+        suggestions.add("Move products from Section " + performance.getAreaId() + " to high-traffic areas.");
     }
+
+    // Construindo a resposta com as sugestões
+    RelocationResponse response = RelocationResponse.newBuilder()
+            .addAllSuggestions(suggestions)
+            .build();
+
+    // Enviando a resposta
+    responseObserver.onNext(response);
+    responseObserver.onCompleted();
+}
+           }
 }
