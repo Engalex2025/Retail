@@ -44,18 +44,17 @@ public class RetailServer {
         InventoryRestockImpl inventoryRefill = new InventoryRestockImpl();
         SmartPricingImpl smartPricing = new SmartPricingImpl();
         SalesHeatmapImpl salesHeatmap = new SalesHeatmapImpl();
-        StoreSecurityImpl storeSecurity = new StoreSecurityImpl();  // Instância da classe externa
+        StoreSecurityImpl storeSecurity = new StoreSecurityImpl(); 
 
         int port = 50051;
 
         try {
-            Server server = ServerBuilder.forPort(50051)
-                // Usando as instâncias já criadas e interceptando elas
-                .addService(ServerInterceptors.intercept(inventoryRefill, new MetadataInterceptor()))
-                .addService(ServerInterceptors.intercept(smartPricing, new MetadataInterceptor()))
-                .addService(ServerInterceptors.intercept(salesHeatmap, new MetadataInterceptor()))
-                .addService(ServerInterceptors.intercept(storeSecurity, new MetadataInterceptor()))
-                .build();
+            Server server = ServerBuilder.forPort(port)
+                    .addService(inventoryRefill)
+                    .addService(smartPricing)      
+                    .addService(salesHeatmap) 
+                    .addService(storeSecurity)
+                    .build();
 
             server.start();
             logger.info("Server started, listening on " + port);

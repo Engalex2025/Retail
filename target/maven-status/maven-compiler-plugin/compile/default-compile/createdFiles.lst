@@ -42,13 +42,11 @@ generated\grpc\SecurityMonitor\Empty.class
 generated\grpc\SalesHeatmap\SalesHeatmapGrpc$MethodHandlers.class
 generated\grpc\SecurityMonitor\StoreSecurityGrpc$2.class
 distsys\retail\RetailServer$InventoryRestockImpl.class
-distsys\retail\MetadataInterceptor.class
 distsys\retail\SecurityMonitorGUI$6.class
 generated\grpc\SmartPricing\SmartPricingGrpc$3.class
 distsys\retail\SmartPricingGUI$2.class
 generated\grpc\SecurityMonitor\SecurityAlert$1.class
 generated\grpc\SmartPricing\ProductRequestOrBuilder.class
-distsys\retail\SmartPricingGUI$ClientMetadataInterceptor$1.class
 generated\grpc\SalesHeatmap\SalesHeatmapGrpc$1.class
 generated\grpc\SalesMonitor\SalesHeatmapGrpc$SalesHeatmapBlockingStub.class
 generated\grpc\SalesHeatmap\RelocationResponse.class
@@ -87,10 +85,8 @@ generated\grpc\SalesHeatmap\SalesPerformanceResponse$1.class
 generated\grpc\SecurityMonitor\SecurityMonitorImpl.class
 generated\grpc\SmartPricing\SmartPricingGrpc$SmartPricingStub.class
 generated\grpc\SalesMonitor\SalesRequest.class
-MetadataInterceptor.class
 generated\grpc\SecurityMonitor\SecurityResponse$Builder.class
 generated\grpc\InventoryRefill\InventoryRestockGrpc$2.class
-distsys\retail\SalesHeatmapGUI$ClientMetadataInterceptor$1.class
 generated\grpc\SecurityMonitor\StoreSecurityGrpc$StoreSecurityMethodDescriptorSupplier.class
 generated\grpc\InventoryRefill\InventoryRestockGrpc$InventoryRestockBlockingStub.class
 generated\grpc\SmartPricing\SmartPricingImpl.class
@@ -98,7 +94,6 @@ distsys\retail\SecurityMonitorGUI$4.class
 generated\grpc\InventoryRefill\RestockSummary$Builder.class
 generated\grpc\SalesHeatmap\SalesHeatmapGrpc.class
 generated\grpc\SmartPricing\PriceUpdateRequest$1.class
-distsys\retail\SalesHeatmapGUI$ClientMetadataInterceptor.class
 generated\grpc\SmartPricing\ProductRequest.class
 generated\grpc\InventoryRefill\InventoryRestockGrpc$1.class
 generated\grpc\SalesHeatmap\SalesHeatmapGrpc$3.class
@@ -155,7 +150,6 @@ distsys\retail\SecurityMonitorGUI.class
 generated\grpc\SalesMonitor\SalesHeatmapGrpc$MethodHandlers.class
 generated\grpc\SmartPricing\SmartPricingGrpc$SmartPricingBlockingStub.class
 generated\grpc\SalesHeatmap\RelocationResponseOrBuilder.class
-distsys\retail\SmartPricingGUI$ClientMetadataInterceptor.class
 distsys\retail\SalesHeatmapGUI.class
 generated\grpc\SalesMonitor\SalesRequestOrBuilder.class
 generated\grpc\SalesHeatmap\AreaPerformanceOrBuilder.class

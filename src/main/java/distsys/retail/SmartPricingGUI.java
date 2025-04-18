@@ -31,8 +31,7 @@ public class SmartPricingGUI extends javax.swing.JFrame {
     }
     private void connectToServer() {
     channel = ManagedChannelBuilder.forAddress("localhost", 50051)
-            .usePlaintext()
-            .intercept(new ClientMetadataInterceptor()) 
+            .usePlaintext()          
             .build();
   
 
@@ -40,27 +39,8 @@ public class SmartPricingGUI extends javax.swing.JFrame {
     blockingStub = SmartPricingGrpc.newBlockingStub(channel);
 }
 
-public class ClientMetadataInterceptor implements ClientInterceptor {
 
-    @Override
-    public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(
-            MethodDescriptor<ReqT, RespT> method,
-            CallOptions callOptions,
-            Channel next) {
 
-        return new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(
-                next.newCall(method, callOptions)) {
-
-            @Override
-            public void start(Listener<RespT> responseListener, Metadata headers) {
-                // Enviando os metadados
-                headers.put(Metadata.Key.of("client-id", Metadata.ASCII_STRING_MARSHALLER), "SmartPricingGUI");
-                headers.put(Metadata.Key.of("env", Metadata.ASCII_STRING_MARSHALLER), "dev");
-                super.start(responseListener, headers);
-            }
-        };
-    }
-}
 
                  
     /**

@@ -4,7 +4,7 @@
  */
 package distsys.retail;
 
-import distsys.retail.SmartPricingGUI.ClientMetadataInterceptor;
+
 import generated.grpc.SalesHeatmap.SalesHeatmapGrpc;
 import io.grpc.CallOptions;
 import io.grpc.Channel;
@@ -48,7 +48,6 @@ public class SalesHeatmapGUI extends javax.swing.JFrame {
     channel = ManagedChannelBuilder
             .forAddress("localhost", 50051)
             .usePlaintext()
-            .intercept(new ClientMetadataInterceptor())
             .build();
     
     // Definining 2 seconds timing
@@ -60,29 +59,6 @@ public class SalesHeatmapGUI extends javax.swing.JFrame {
         Random rand = new Random();
         return rand.nextInt(50); // Simula vendas
     }
-public class ClientMetadataInterceptor implements ClientInterceptor {
-    @Override
-    public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(
-            MethodDescriptor<ReqT, RespT> method,
-            CallOptions callOptions,
-            Channel next) {
-
-        System.out.println("[ClientInterceptor] Intercepting call to: " + method.getFullMethodName());
-
-        return new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(
-                next.newCall(method, callOptions)) {
-
-            @Override
-            public void start(Listener<RespT> responseListener, Metadata headers) {
-                headers.put(Metadata.Key.of("client-id", Metadata.ASCII_STRING_MARSHALLER), "SalesHeatmapClient");
-                headers.put(Metadata.Key.of("env", Metadata.ASCII_STRING_MARSHALLER), "production");
-                System.out.println("[ClientInterceptor] Metadata sent.");
-                super.start(responseListener, headers);
-            }
-        };
-    }
-}
-
 
     /**
      * This method is called from within the constructor to initialize the form.
