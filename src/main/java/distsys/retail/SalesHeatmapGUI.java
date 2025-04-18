@@ -4,20 +4,21 @@
  */
 package distsys.retail;
 
-import generated.grpc.SalesHeatmap.AreaPerformance;
+import distsys.retail.SmartPricingGUI.ClientMetadataInterceptor;
 import generated.grpc.SalesHeatmap.SalesHeatmapGrpc;
-import generated.grpc.SalesHeatmap.RelocationRequest;
-import generated.grpc.SalesHeatmap.RelocationResponse;
-import generated.grpc.SalesHeatmap.SalesUpdate;
-import generated.grpc.SalesHeatmap.SalesRequest;
+import io.grpc.CallOptions;
+import io.grpc.Channel;
+import io.grpc.ClientCall;
+import io.grpc.ClientInterceptor;
+import io.grpc.ForwardingClientCall;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import io.grpc.stub.StreamObserver;
-import java.util.ArrayList;
-import java.util.List;
+import io.grpc.Metadata;
+import io.grpc.MethodDescriptor;
+import io.grpc.StatusRuntimeException;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
-import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  *
@@ -38,26 +39,49 @@ public class SalesHeatmapGUI extends javax.swing.JFrame {
      * Creates new form SalesHeatmapGUI
      */
     public SalesHeatmapGUI() {
-        initComponents();
-       outputUpdates.setEnabled(true);
+    initComponents();
+    outputUpdates.setEnabled(true);
     outputUpdates.setEditable(false);
 
     outputUpdates.append("Interface initialized!\n");
 
+    channel = ManagedChannelBuilder
+            .forAddress("localhost", 50051)
+            .usePlaintext()
+            .intercept(new ClientMetadataInterceptor())
+            .build();
+    
+    // Definining 2 seconds timing
+    asyncStub = SalesHeatmapGrpc.newStub(channel).withDeadlineAfter(2, TimeUnit.SECONDS);
+    blockingStub = SalesHeatmapGrpc.newBlockingStub(channel).withDeadlineAfter(2, TimeUnit.SECONDS);
+}
 
-        channel = ManagedChannelBuilder
-                .forAddress("localhost", 50051)
-                .usePlaintext()
-                .build();
-       asyncStub = SalesHeatmapGrpc.newStub(channel);
-       blockingStub = SalesHeatmapGrpc.newBlockingStub(channel);
-    
-    
-    }
      private int getSalesPerformance(String sectionId) {
         Random rand = new Random();
         return rand.nextInt(50); // Simula vendas
     }
+public class ClientMetadataInterceptor implements ClientInterceptor {
+    @Override
+    public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(
+            MethodDescriptor<ReqT, RespT> method,
+            CallOptions callOptions,
+            Channel next) {
+
+        System.out.println("[ClientInterceptor] Intercepting call to: " + method.getFullMethodName());
+
+        return new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(
+                next.newCall(method, callOptions)) {
+
+            @Override
+            public void start(Listener<RespT> responseListener, Metadata headers) {
+                headers.put(Metadata.Key.of("client-id", Metadata.ASCII_STRING_MARSHALLER), "SalesHeatmapClient");
+                headers.put(Metadata.Key.of("env", Metadata.ASCII_STRING_MARSHALLER), "production");
+                System.out.println("[ClientInterceptor] Metadata sent.");
+                super.start(responseListener, headers);
+            }
+        };
+    }
+}
 
 
     /**
@@ -141,62 +165,75 @@ public class SalesHeatmapGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void trackSalesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trackSalesActionPerformed
-       outputUpdates.setText(""); // Clear output
+                                          
+    outputUpdates.setText(""); // Clear output
 
-for (int i = 0; i < sections.length; i++) {
-    salesData[i] = getSalesPerformance(sections[i]); // Save sales data
-    outputUpdates.append("Section: " + sections[i] + " | Sales: " + salesData[i] + "\n");
-}
-
-salesTracked = true; // Flag to indicate that data is ready
-
-// Find best and worst sections
-String bestSection = null, worstSection = null;
-int highest = Integer.MIN_VALUE, lowest = Integer.MAX_VALUE;
-
-for (int i = 0; i < salesData.length; i++) {
-    if (salesData[i] > highest) {
-        highest = salesData[i];
-        bestSection = sections[i];
+    for (int i = 0; i < sections.length; i++) {
+        try {
+            salesData[i] = getSalesPerformance(sections[i]); // Simula as vendas
+            outputUpdates.append("Section: " + sections[i] + " | Sales: " + salesData[i] + "\n");
+        } catch (StatusRuntimeException e) {
+            // Caso o timeout aconteça
+            outputUpdates.append("Error: Timeout or other issue while fetching data for section: " + sections[i] + "\n");
+        }
     }
-    if (salesData[i] < lowest) {
-        lowest = salesData[i];
-        worstSection = sections[i];
-    }
-}
 
-outputUpdates.append("Sales tracking completed.\n");
-outputUpdates.append("Best Section: " + bestSection + " | Sales: " + highest + "\n");
-outputUpdates.append("Worst Section: " + worstSection + " | Sales: " + lowest + "\n");
+    salesTracked = true; // Flag to indicate that data is ready
+
+    // Encontrar a melhor e a pior seção
+    String bestSection = null, worstSection = null;
+    int highest = Integer.MIN_VALUE, lowest = Integer.MAX_VALUE;
+
+    for (int i = 0; i < salesData.length; i++) {
+        if (salesData[i] > highest) {
+            highest = salesData[i];
+            bestSection = sections[i];
+        }
+        if (salesData[i] < lowest) {
+            lowest = salesData[i];
+            worstSection = sections[i];
+        }
+    }
+
+    outputUpdates.append("Sales tracking completed.\n");
+    outputUpdates.append("Best Section: " + bestSection + " | Sales: " + highest + "\n");
+    outputUpdates.append("Worst Section: " + worstSection + " | Sales: " + lowest + "\n");
 
     }//GEN-LAST:event_trackSalesActionPerformed
 
     private void realocationSuggestionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_realocationSuggestionsActionPerformed
-                                                                                                                                                                                                                                                                                                                                    
-  suggestionOutput.setText(""); // Clear output
+                                                                                                                                                                                                                                                                                                                                                                                          
+    suggestionOutput.setText(""); // Clear output
 
-if (!salesTracked) {
-    suggestionOutput.setText("Please click 'Track Sales' first.\n");
-    return;
-}
-
-int maxSales = Integer.MIN_VALUE, minSales = Integer.MAX_VALUE;
-String bestSection = "", worstSection = "";
-
-for (int i = 0; i < sections.length; i++) {
-    int sales = salesData[i];
-    if (sales > maxSales) {
-        maxSales = sales;
-        bestSection = sections[i];
+    if (!salesTracked) {
+        suggestionOutput.setText("Please click 'Track Sales' first.\n");
+        return;
     }
-    if (sales < minSales) {
-        minSales = sales;
-        worstSection = sections[i];
-    }
-}
 
-suggestionOutput.append("Move products from Section " + worstSection + " (Sales: " + minSales + ") to Section " + bestSection + " (Sales: " + maxSales + ").\n");
-suggestionOutput.append("Relocation suggestions completed.\n");
+    try {
+        int maxSales = Integer.MIN_VALUE, minSales = Integer.MAX_VALUE;
+        String bestSection = "", worstSection = "";
+
+        for (int i = 0; i < sections.length; i++) {
+            int sales = salesData[i];
+            if (sales > maxSales) {
+                maxSales = sales;
+                bestSection = sections[i];
+            }
+            if (sales < minSales) {
+                minSales = sales;
+                worstSection = sections[i];
+            }
+        }
+
+        suggestionOutput.append("Move products from Section " + worstSection + 
+                        " (Sales: " + minSales + ") to Section " + 
+                        bestSection + " (Sales: " + maxSales + ").\n");
+
+        suggestionOutput.append("Relocation suggestions completed.\n");
+    } catch (StatusRuntimeException e) {
+        suggestionOutput.append("Error: Timeout or other issue while generating relocation suggestions.\n");
+    }
 
 
 

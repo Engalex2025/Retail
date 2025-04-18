@@ -4,6 +4,8 @@
  */
 package distsys.retail;
 
+
+import generated.grpc.InventoryRefill.InventoryRefillImpl;
 import generated.grpc.InventoryRefill.InventoryRestockGrpc;
 import generated.grpc.InventoryRefill.RestockRequest;
 import generated.grpc.InventoryRefill.RestockSummary;
@@ -16,56 +18,58 @@ import generated.grpc.SmartPricing.PriceUpdateRequest;
 import generated.grpc.SmartPricing.PriceUpdateResponse;
 
 import generated.grpc.SalesHeatmap.SalesHeatmapGrpc;
-import generated.grpc.SalesHeatmap.SalesRequest;
-import generated.grpc.SalesHeatmap.SalesUpdate;
+import generated.grpc.SecurityMonitor.Empty;
+import generated.grpc.SecurityMonitor.SecurityAlert;
+import generated.grpc.SecurityMonitor.SecurityIncident;
+import generated.grpc.SecurityMonitor.SecurityResponse;
+import generated.grpc.SecurityMonitor.StoreSecurityGrpc;
+
+
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.ServerInterceptors;
 import io.grpc.stub.StreamObserver;
 import java.io.IOException;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.logging.Logger;
 
-/**
- *
- * @author Alexandre
- */
-public class RetailServer{
+public class RetailServer {
     private static final Logger logger = Logger.getLogger(RetailServer.class.getName());
-    
-    public static void main(String [] args){
-       InventoryRestockImpl inventoryRefill = new InventoryRestockImpl();
-       
-       SmartPricingImpl smartPricing = new SmartPricingImpl();
-       
-       SalesHeatmapImpl salesHeatmap = new SalesHeatmapImpl();
 
-       
+    public static void main(String[] args) {
+        InventoryRestockImpl inventoryRefill = new InventoryRestockImpl();
+        SmartPricingImpl smartPricing = new SmartPricingImpl();
+        SalesHeatmapImpl salesHeatmap = new SalesHeatmapImpl();
+        StoreSecurityImpl storeSecurity = new StoreSecurityImpl();  // Instância da classe externa
+
         int port = 50051;
-        
-        try{
-            Server server = ServerBuilder.forPort(port)
-                    .addService(inventoryRefill)
-                    .addService(smartPricing)      
-                    .addService(salesHeatmap) 
-                    .build()
-                    .start();
+
+        try {
+            Server server = ServerBuilder.forPort(50051)
+                // Usando as instâncias já criadas e interceptando elas
+                .addService(ServerInterceptors.intercept(inventoryRefill, new MetadataInterceptor()))
+                .addService(ServerInterceptors.intercept(smartPricing, new MetadataInterceptor()))
+                .addService(ServerInterceptors.intercept(salesHeatmap, new MetadataInterceptor()))
+                .addService(ServerInterceptors.intercept(storeSecurity, new MetadataInterceptor()))
+                .build();
+
+            server.start();
             logger.info("Server started, listening on " + port);
             System.out.println("Server started, listening on " + port);
             server.awaitTermination();
-            
-        }catch(IOException e){
-            //TODO Auto-generated catch block
+
+        } catch (IOException e) {
             e.printStackTrace();
-        }catch(InterruptedException e){
-            //TODO Auto-generated catch block
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-    
+
+
     /*
     *
     *This service is a client streaming service
@@ -113,7 +117,7 @@ public class RetailServer{
         }
     }
        public static class SmartPricingImpl extends SmartPricingGrpc.SmartPricingImplBase {
-        @Override
+         @Override
         public void updatePrice(PriceUpdateRequest request, StreamObserver<PriceUpdateResponse> responseObserver) {
             String productId = request.getProductId();
             double newPrice = request.getNewPrice();
@@ -127,13 +131,12 @@ public class RetailServer{
             responseObserver.onNext(response);
             responseObserver.onCompleted();
         }
-       }
+    }
+
             
            public static class SalesHeatmapImpl extends SalesHeatmapGrpc.SalesHeatmapImplBase {
-
-       
         @Override
-public void suggestProductRelocation(RelocationRequest request, StreamObserver<RelocationResponse> responseObserver) {
+        public void suggestProductRelocation(RelocationRequest request, StreamObserver<RelocationResponse> responseObserver) {
     // Verificando a lista de performances do RelocationRequest
     List<String> suggestions = new ArrayList<>();
 
@@ -153,4 +156,52 @@ public void suggestProductRelocation(RelocationRequest request, StreamObserver<R
     responseObserver.onCompleted();
 }
            }
+}
+ class StoreSecurityImpl extends StoreSecurityGrpc.StoreSecurityImplBase {
+    private static final Logger logger = Logger.getLogger(StoreSecurityImpl.class.getName());
+
+    @Override
+    public void streamSecurityAlerts(Empty request, StreamObserver<SecurityAlert> responseObserver) {
+        // Lógica para enviar alertas de segurança
+        SecurityAlert alert = SecurityAlert.newBuilder()
+                .setStoreId("A101")
+                .setAlertMessage("Security breach detected!")
+                .setTimestamp(getCurrentTimestamp())
+                .build();
+
+        responseObserver.onNext(alert);
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public StreamObserver<SecurityIncident> handleSecurityIncident(StreamObserver<SecurityResponse> responseObserver) {
+        return new StreamObserver<SecurityIncident>() {
+            @Override
+            public void onNext(SecurityIncident incident) {
+                // Processar incidente de segurança
+                logger.info("Received incident: " + incident.getIncidentId());
+                // Realizar alguma ação
+                SecurityResponse response = SecurityResponse.newBuilder()
+                        .setIncidentId(incident.getIncidentId())
+                        .setResponseStatus("Action taken")
+                        .build();
+                responseObserver.onNext(response);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                logger.severe("Error handling incident: " + t.getMessage());
+            }
+
+            @Override
+            public void onCompleted() {
+                responseObserver.onCompleted();
+            }
+        };
+    }
+
+    // Utilitário para formatação do timestamp
+    private String getCurrentTimestamp() {
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
 }

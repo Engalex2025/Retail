@@ -7,8 +7,13 @@ package distsys.retail;
 import generated.grpc.InventoryRefill.InventoryRestockGrpc;
 import generated.grpc.InventoryRefill.RestockRequest;
 import generated.grpc.InventoryRefill.RestockSummary;
+import io.grpc.CallOptions;
+import io.grpc.ClientCall;
+import io.grpc.ClientInterceptor;
+import io.grpc.ForwardingClientCall;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.Metadata;
 import io.grpc.stub.StreamObserver;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -42,8 +47,24 @@ public class InventoryRefillGUI extends javax.swing.JFrame {
         channel = ManagedChannelBuilder
                 .forAddress("localhost", 50051)
                 .usePlaintext()
+                 .intercept(new ClientMetadataInterceptor())
                 .build();
         asyncStub = InventoryRestockGrpc.newStub(channel);
+    }
+private class ClientMetadataInterceptor implements ClientInterceptor {
+        @Override
+        public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(
+                io.grpc.MethodDescriptor<ReqT, RespT> method, CallOptions callOptions, io.grpc.Channel next) {
+
+            return new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(next.newCall(method, callOptions)) {
+                @Override
+                public void start(Listener<RespT> responseListener, Metadata headers) {
+                    // Add metadata here (e.g., client ID or session information)
+                    headers.put(Metadata.Key.of("client-id", Metadata.ASCII_STRING_MARSHALLER), "InventoryRefillClient-001");
+                    super.start(responseListener, headers);
+                }
+            };
+        }
     }
 
     /**
@@ -175,36 +196,43 @@ public class InventoryRefillGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void submitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitBtnActionPerformed
-        if (table.getRowCount() == 0) {
-            outputRestock.setText("All products have a good quantity in the stock.");
-            return;
+                                         
+    if (table.getRowCount() == 0) {
+        outputRestock.setText("All products have a good quantity in the stock.");
+        return;
+    }
+
+    outputRestock.setText("Sending requests.\n");
+
+    // Novo stub com deadline de 2 segundos
+    InventoryRestockGrpc.InventoryRestockStub stubWithTimeout = asyncStub.withDeadlineAfter(2, java.util.concurrent.TimeUnit.SECONDS);
+
+    StreamObserver<RestockSummary> responseObserver = new StreamObserver<RestockSummary>() {
+        @Override
+        public void onNext(RestockSummary summary) {
+            outputRestock.append("Information about the restock submission:\n");
+            outputRestock.append("Total processed: " + summary.getTotalProcessed() + "\n");
+            outputRestock.append("Total Failed: " + summary.getTotalFailed() + "\n");
         }
 
-        outputRestock.setText("Sending requests.\n");
-
-        StreamObserver<RestockSummary> responseObserver = new StreamObserver<RestockSummary>() {
-            @Override
-            public void onNext(RestockSummary summary) {
-                outputRestock.append("Information about the restock submission:\n");
-                outputRestock.append("Total processed: " + summary.getTotalProcessed() + "\n");
-                outputRestock.append("Total Failed: " + summary.getTotalFailed() + "\n");
-            }
-
-            @Override
-            public void onError(Throwable t) {
+        @Override
+        public void onError(Throwable t) {
+            if (io.grpc.Status.fromThrowable(t).getCode() == io.grpc.Status.Code.DEADLINE_EXCEEDED) {
+                outputRestock.append("Error: Deadline exceeded! The request took too long.\n");
+            } else {
                 outputRestock.append("Error: " + t.getMessage() + "\n");
             }
+        }
 
-            @Override
-            public void onCompleted() {
-                outputRestock.append("Stream completed.\n");
-            }
-        };
+        @Override
+        public void onCompleted() {
+            outputRestock.append("Stream completed.\n");
+        }
+    };
 
-        // sending tables data 
-        StreamObserver<RestockRequest> requestObserver = asyncStub.bulkRestock(responseObserver);
+    StreamObserver<RestockRequest> requestObserver = stubWithTimeout.bulkRestock(responseObserver);
 
-        //loop to take productID and quantities and send it to the server
+    try {
         for (int i = 0; i < table.getRowCount(); i++) {
             String id = table.getValueAt(i, 0).toString();
             int qty = (Integer) table.getValueAt(i, 1);
@@ -216,16 +244,17 @@ public class InventoryRefillGUI extends javax.swing.JFrame {
 
             requestObserver.onNext(request);
             output.append("Sending request for Product ID: " + id + ", Quantity: " + qty + "\n");
-
         }
 
         requestObserver.onCompleted();
-        
-        // Clear the table
         table.setRowCount(0);
-
-        // Show confirmation message in the text area
         output.append("Request sent successfully!");
+
+    } catch (RuntimeException e) {
+        requestObserver.onError(e);
+        throw e;
+    }
+
 
 
     }//GEN-LAST:event_submitBtnActionPerformed

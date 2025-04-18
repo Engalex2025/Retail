@@ -11,6 +11,10 @@ import generated.grpc.SmartPricing.SmartPricingGrpc.SmartPricingBlockingStub;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import io.grpc.StatusRuntimeException;
+import io.grpc.*;
+
 /**
  *
  * @author Alexandre
@@ -26,12 +30,39 @@ public class SmartPricingGUI extends javax.swing.JFrame {
         connectToServer();
     }
     private void connectToServer() {
-        channel = ManagedChannelBuilder.forAddress("localhost", 50051)
-                .usePlaintext()
-                .build();
-        blockingStub = SmartPricingGrpc.newBlockingStub(channel);
-    }
+    channel = ManagedChannelBuilder.forAddress("localhost", 50051)
+            .usePlaintext()
+            .intercept(new ClientMetadataInterceptor()) 
+            .build();
+  
 
+
+    blockingStub = SmartPricingGrpc.newBlockingStub(channel);
+}
+
+public class ClientMetadataInterceptor implements ClientInterceptor {
+
+    @Override
+    public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(
+            MethodDescriptor<ReqT, RespT> method,
+            CallOptions callOptions,
+            Channel next) {
+
+        return new ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT>(
+                next.newCall(method, callOptions)) {
+
+            @Override
+            public void start(Listener<RespT> responseListener, Metadata headers) {
+                // Enviando os metadados
+                headers.put(Metadata.Key.of("client-id", Metadata.ASCII_STRING_MARSHALLER), "SmartPricingGUI");
+                headers.put(Metadata.Key.of("env", Metadata.ASCII_STRING_MARSHALLER), "dev");
+                super.start(responseListener, headers);
+            }
+        };
+    }
+}
+
+                 
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -269,15 +300,22 @@ public class SmartPricingGUI extends javax.swing.JFrame {
             .setNewPrice(adjustedPrice)
             .build();
     
-    // Make the gRPC call to update the price
-    PriceUpdateResponse response = blockingStub.updatePrice(request);
+    try {
+    // Add a 3-second timeout for the gRPC call
+    PriceUpdateResponse response = blockingStub
+            .withDeadlineAfter(3, TimeUnit.SECONDS)
+            .updatePrice(request);
 
-    // Checking if the update was successful 
     if (response.getSuccess()) {
         outputArea.append("Price update was successful!\n");
     } else {
         outputArea.append("Price update failed.\n");
     }
+} catch (StatusRuntimeException e) {
+    // Handle timeout, cancellation, or connectivity issues
+    outputArea.append("Error: gRPC request failed - " + e.getStatus().getDescription() + "\n");
+}
+
 
 
 
@@ -332,4 +370,5 @@ public class SmartPricingGUI extends javax.swing.JFrame {
     private javax.swing.JTextField productPrice;
     private javax.swing.JButton updatePrice;
     // End of variables declaration//GEN-END:variables
-}
+        }
+                
