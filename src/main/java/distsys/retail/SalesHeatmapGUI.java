@@ -6,15 +6,8 @@ package distsys.retail;
 
 
 import generated.grpc.SalesHeatmap.SalesHeatmapGrpc;
-import io.grpc.CallOptions;
-import io.grpc.Channel;
-import io.grpc.ClientCall;
-import io.grpc.ClientInterceptor;
-import io.grpc.ForwardingClientCall;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import io.grpc.Metadata;
-import io.grpc.MethodDescriptor;
 import io.grpc.StatusRuntimeException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -57,7 +50,7 @@ public class SalesHeatmapGUI extends javax.swing.JFrame {
 
      private int getSalesPerformance(String sectionId) {
         Random rand = new Random();
-        return rand.nextInt(50); // Simula vendas
+        return rand.nextInt(50); 
     }
 
     /**
@@ -149,14 +142,13 @@ public class SalesHeatmapGUI extends javax.swing.JFrame {
             salesData[i] = getSalesPerformance(sections[i]); // Simula as vendas
             outputUpdates.append("Section: " + sections[i] + " | Sales: " + salesData[i] + "\n");
         } catch (StatusRuntimeException e) {
-            // Caso o timeout aconteça
             outputUpdates.append("Error: Timeout or other issue while fetching data for section: " + sections[i] + "\n");
         }
     }
 
     salesTracked = true; // Flag to indicate that data is ready
 
-    // Encontrar a melhor e a pior seção
+    // Finding the best and worst section
     String bestSection = null, worstSection = null;
     int highest = Integer.MIN_VALUE, lowest = Integer.MAX_VALUE;
 

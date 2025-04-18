@@ -13,7 +13,6 @@ import io.grpc.ManagedChannelBuilder;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import io.grpc.StatusRuntimeException;
-import io.grpc.*;
 
 /**
  *
@@ -38,10 +37,6 @@ public class SmartPricingGUI extends javax.swing.JFrame {
 
     blockingStub = SmartPricingGrpc.newBlockingStub(channel);
 }
-
-
-
-
                  
     /**
      * This method is called from within the constructor to initialize the form.

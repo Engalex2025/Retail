@@ -5,7 +5,6 @@
 package distsys.retail;
 
 
-import generated.grpc.InventoryRefill.InventoryRefillImpl;
 import generated.grpc.InventoryRefill.InventoryRestockGrpc;
 import generated.grpc.InventoryRefill.RestockRequest;
 import generated.grpc.InventoryRefill.RestockSummary;
@@ -28,7 +27,6 @@ import generated.grpc.SecurityMonitor.StoreSecurityGrpc;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
-import io.grpc.ServerInterceptors;
 import io.grpc.stub.StreamObserver;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -121,8 +119,8 @@ public class RetailServer {
             String productId = request.getProductId();
             double newPrice = request.getNewPrice();
 
-            // Lógica de atualização de preço (simulação)
-            boolean success = true; // Sucesso por padrão (pode adicionar lógica real aqui)
+            // Price Update 
+            boolean success = true; 
             PriceUpdateResponse response = PriceUpdateResponse.newBuilder()
                     .setSuccess(success)
                     .build();
@@ -136,41 +134,45 @@ public class RetailServer {
            public static class SalesHeatmapImpl extends SalesHeatmapGrpc.SalesHeatmapImplBase {
         @Override
         public void suggestProductRelocation(RelocationRequest request, StreamObserver<RelocationResponse> responseObserver) {
-    // Verificando a lista de performances do RelocationRequest
-    List<String> suggestions = new ArrayList<>();
+   
+             // Verifying RelocationRequest list
+                List<String> suggestions = new ArrayList<>();
 
-    // Acessando a lista de performances
-    for (AreaPerformance performance : request.getPerformancesList()) {
-        // Lógica para gerar sugestões com base nas performances
-        suggestions.add("Move products from Section " + performance.getAreaId() + " to high-traffic areas.");
-    }
+             // Acessing Performance List
+                for (AreaPerformance performance : request.getPerformancesList()) {
+            // Suggests based on Performance
+                suggestions.add("Move products from Section " + performance.getAreaId() + " to high-traffic areas.");
+            }
 
-    // Construindo a resposta com as sugestões
-    RelocationResponse response = RelocationResponse.newBuilder()
-            .addAllSuggestions(suggestions)
-            .build();
+            // Building answers with suggestions 
+                RelocationResponse response = RelocationResponse.newBuilder()
+             .addAllSuggestions(suggestions)
+             .build();
 
-    // Enviando a resposta
-    responseObserver.onNext(response);
-    responseObserver.onCompleted();
+            // Sending the answer
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+            }
+        }
 }
-           }
-}
- class StoreSecurityImpl extends StoreSecurityGrpc.StoreSecurityImplBase {
-    private static final Logger logger = Logger.getLogger(StoreSecurityImpl.class.getName());
+            
+         class StoreSecurityImpl extends StoreSecurityGrpc.StoreSecurityImplBase {
+             private static final Logger logger = Logger.getLogger(StoreSecurityImpl.class.getName());
 
-    @Override
-    public void streamSecurityAlerts(Empty request, StreamObserver<SecurityAlert> responseObserver) {
-        // Lógica para enviar alertas de segurança
-        SecurityAlert alert = SecurityAlert.newBuilder()
-                .setStoreId("A101")
+            @Override
+           
+               public void streamSecurityAlerts(Empty request, StreamObserver<SecurityAlert> responseObserver) {
+      
+            // Alert Security
+                SecurityAlert alert = SecurityAlert.newBuilder()
+                    .setStoreId("A101")
                 .setAlertMessage("Security breach detected!")
                 .setTimestamp(getCurrentTimestamp())
                 .build();
 
-        responseObserver.onNext(alert);
-        responseObserver.onCompleted();
-    }
+                responseObserver.onNext(alert);
+                responseObserver.onCompleted();
+        }
 
     @Override
     public StreamObserver<SecurityIncident> handleSecurityIncident(StreamObserver<SecurityResponse> responseObserver) {
@@ -199,7 +201,7 @@ public class RetailServer {
         };
     }
 
-    // Utilitário para formatação do timestamp
+    // Timestamp Utilities 
     private String getCurrentTimestamp() {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }

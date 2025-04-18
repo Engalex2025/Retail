@@ -16,12 +16,11 @@ import generated.grpc.SecurityMonitor.SecurityIncident;
 import generated.grpc.SecurityMonitor.SecurityResponse;
 import generated.grpc.SecurityMonitor.StoreSecurityGrpc;
 import generated.grpc.SecurityMonitor.StoreSecurityGrpc.StoreSecurityStub;
-import io.grpc.CallOptions;
 import java.util.concurrent.TimeUnit;
 
 /**
  *
- * @author alexa
+ * @author Alexandre
  */
 public class SecurityMonitorGUI extends javax.swing.JFrame {
      private static final Logger logger = Logger.getLogger(SecurityMonitorGUI.class.getName());
@@ -29,7 +28,7 @@ public class SecurityMonitorGUI extends javax.swing.JFrame {
      
      
     private ManagedChannel channel;
-    private StreamObserver<SecurityIncident> incidentObserver;  // For sending incidents (Bidirectional)
+    private StreamObserver<SecurityIncident> incidentObserver;  
     private StreamObserver<SecurityAlert> alertObserver;
     private boolean monitoring = false; 
 
@@ -214,18 +213,13 @@ public class SecurityMonitorGUI extends javax.swing.JFrame {
     // Display the selected action in the alerts area (alertsArea)
     alertsArea.append("Selected Action: " + selectedAction + "\n");
 
-    // From here, you can process the action. For example:
-    if (selectedAction.equals("Investigate")) {
-        // You can send an investigation request (e.g., call a gRPC service)
+    if (selectedAction.equals("Investigate")) {  
         responseArea.append("Investigation initiated.\n");
-    } else if (selectedAction.equals("Disarm")) {
-        // You could call a function to disarm the alarm or perform any other logic
+    } else if (selectedAction.equals("Disarm")) { 
         responseArea.append("Alarm disarmed.\n");
     } else if (selectedAction.equals("Robbery Alert")) {
-        // You could trigger a robbery alert (e.g., notify the police)
         responseArea.append("Robbery alert triggered.\n");
     } else {
-        // If the user selects "Other" or any other custom action
         responseArea.append("Custom action selected.\n");
     }
 
@@ -275,7 +269,6 @@ public class SecurityMonitorGUI extends javax.swing.JFrame {
         .setActionTaken(selectedAction)
         .build();
 
-// Definir um deadline para o envio do incidente (timeout de 5 segundos)
 asyncStub.withDeadlineAfter(5, TimeUnit.SECONDS).handleSecurityIncident(new StreamObserver<SecurityResponse>() {
     @Override
     public void onNext(SecurityResponse response) {
@@ -342,15 +335,14 @@ asyncStub.withDeadlineAfter(5, TimeUnit.SECONDS).handleSecurityIncident(new Stre
     monitoring = false;
 
     if (alertObserver != null) {
-        alertObserver.onCompleted();  // Finaliza a stream
+        alertObserver.onCompleted();
         alertsArea.append("Monitoring stopped by user.\n");
     } else {
         alertsArea.append("No active stream to stop.\n");
     }
     
-    // Cancelamento explícito (opcional)
     if (channel != null) {
-        channel.shutdownNow();  // Cancela todas as chamadas em andamento e fecha o canal
+        channel.shutdownNow(); 
         alertsArea.append("Channel shutdown initiated.\n");
     }
 

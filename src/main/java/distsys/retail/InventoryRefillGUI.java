@@ -204,7 +204,7 @@ private class ClientMetadataInterceptor implements ClientInterceptor {
 
     outputRestock.setText("Sending requests.\n");
 
-    // Novo stub com deadline de 2 segundos
+    // New Stub with Deadlines 
     InventoryRestockGrpc.InventoryRestockStub stubWithTimeout = asyncStub.withDeadlineAfter(2, java.util.concurrent.TimeUnit.SECONDS);
 
     StreamObserver<RestockSummary> responseObserver = new StreamObserver<RestockSummary>() {
